@@ -1,6 +1,9 @@
 name: Build and Deploy React App
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -18,19 +21,28 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./stock-price-close-up-react
 
       - name: Build React App
         run: npm run build
+        working-directory: ./stock-price-close-up-react
 
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Clear old files
+        run: |
+          az storage blob delete-batch \
+            --account-name cjademostaticweb \
+            --auth-mode login \
+            -s '$web'
+
       - name: Deploy to Azure Storage
         run: |
           az storage blob upload-batch \
             --account-name cjademostaticweb \
             --auth-mode login \
-            -s dist \
+            -s ./stock-price-close-up-react/dist \
             -d '$web'
