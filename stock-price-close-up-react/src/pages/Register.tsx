@@ -1,16 +1,27 @@
 import { useState } from "react";
-import { register } from "../api/accountApi";
+import { useNavigate } from "react-router-dom";
+import { register, getCurrentUser } from "../api/accountApi";
+import { useUser } from "../context/UserContext";
 
 export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+  const { setUser } = useUser();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       const result = await register(username, password);
       setMessage(result.message || "Registration successful!");
+
+      // fetch user info after register
+      const user = await getCurrentUser();
+      setUser(user);
+
+      // redirect to home
+      navigate("/");
     } catch (err: unknown) {
       if (err instanceof Error) setMessage(err.message);
     }

@@ -1,16 +1,27 @@
 import { useState } from "react";
-import { login } from "../api/accountApi";
+import { useNavigate } from "react-router-dom";
+import { login, getCurrentUser } from "../api/accountApi";
+import { useUser } from "../context/UserContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+  const { setUser } = useUser();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
       const result = await login(username, password);
       setMessage(result.message || "Login successful!");
+
+      // fetch user info after login
+      const user = await getCurrentUser();
+      setUser(user);
+
+      // redirect to home
+      navigate("/");
     } catch (err: unknown) {
       if (err instanceof Error) setMessage(err.message);
     }

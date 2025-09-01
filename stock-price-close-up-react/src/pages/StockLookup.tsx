@@ -50,13 +50,26 @@ export default function StockLookup() {
       <div className="col-md-8">
         <div className="card shadow-sm p-4">
           <h2 className="mb-3">Stock Lookup</h2>
-          <input
-            type="text"
-            className="form-control mb-2"
-            placeholder="Enter symbol or company name"
-            value={query}
-            onChange={(e) => handleSearchChange(e.target.value)}
-          />
+
+          {/* Lookup form with input + button */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (query) handleSelect(query);
+            }}
+            className="d-flex mb-2"
+          >
+            <input
+              type="text"
+              className="form-control me-2"
+              placeholder="Enter symbol or company name"
+              value={query}
+              onChange={(e) => handleSearchChange(e.target.value)}
+            />
+            <button type="submit" className="btn btn-primary">
+              Lookup
+            </button>
+          </form>
 
           {suggestions.length > 0 && (
             <ul className="list-group mb-3">
